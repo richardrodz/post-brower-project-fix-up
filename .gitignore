@@ -1,0 +1,24 @@
+# Xcode user data
+*.xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+*.xcworkspace/xcuserdata/
+
+# Xcode build artifacts
+DerivedData/
+build/
+
+# User-specific settings
+*.xcscmblueprint
+
+
+# Swift Package Manager
+/.build/
+Packages/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Others
+.DS_Store
