@@ -21,11 +21,13 @@ final class PostListViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published private(set) var posts: [Post] = []
     @Published private(set) var loadingState: LoadingState = .idle
+    @Published private(set) var favoritePosts = Set<Int>()
 
     private let service: PostFetching
     private var isRefreshing: Bool = false
     
     var filteredPosts: [Post] {
+        // posts is all the posts from the request in services.
         guard !searchText.isEmpty else { return posts }
         
         let query = searchText.lowercased()
@@ -86,5 +88,9 @@ final class PostListViewModel: ObservableObject {
         defer { isRefreshing = false }
         
         await load()
+    }
+    
+    func addToFavorites(id: Int) {
+        favoritePosts.insert(id)
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PostListView: View {
     @StateObject private var viewModel = PostListViewModel()
+    @State private var selectedPost: Post? // drives navigation
     
     var body: some View {
         NavigationStack {
@@ -29,12 +30,17 @@ struct PostListView: View {
             .refreshable {
                 await viewModel.refresh()
             }
+            .navigationDestination(item: $selectedPost) { post in
+                PostDetailView(post: post)
+            }
             .navigationTitle("Posts")
         }
         .task {
             await viewModel.loadIfNeeded()
         }
     }
+    
+    // MARK: Views
     
     @ViewBuilder
     private var contentView: some View {
@@ -53,18 +59,11 @@ struct PostListView: View {
                     .padding()
                 
                 List(viewModel.filteredPosts) { post in
-                    NavigationLink {
-                        PostDetailView(post: post)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(post.title)
-                                .font(.headline)
-                            Text(post.body)
-                                .font(.subheadline)
-                                .lineLimit(2)
-                                .foregroundColor(.secondary)
+                    postRow(with: post)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedPost = post
                         }
-                    }
                 }
             }
         case .error(let errorMessage):
@@ -76,6 +75,40 @@ struct PostListView: View {
             }
         }
     }
+    
+    @ViewBuilder
+    func postRow(with post: Post) -> some View {
+        HStack(alignment: .center) {
+            Button {
+                viewModel.addToFavorites(id: post.id)
+            } label: {
+                if viewModel.favoritePosts.contains(post.id) {
+                    Image(systemName: "star.fill")
+                } else {
+                    Image(systemName: "star")
+                }
+            }
+            .buttonStyle(.borderless)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(post.title)
+                    .font(.headline)
+                Text(post.body)
+                    .font(.subheadline)
+                    .lineLimit(2)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .foregroundColor(.secondary)
+                .imageScale(.small)
+                .accessibilityHidden(true) // decorative
+        }
+    }
+    
+    // MARK: Utility
     
     private var shouldShowLoadingOverlay: Bool {
         switch viewModel.loadingState {
