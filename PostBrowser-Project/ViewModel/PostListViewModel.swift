@@ -75,4 +75,16 @@ final class PostListViewModel: ObservableObject {
             loadingState = .error("Unexpected error: \(error.localizedDescription)")
         }
     }
+    
+    func refresh() async {
+        // Prevent overlapping refreshes
+        guard !isRefreshing else { return }
+        isRefreshing = true
+        
+        // defer schedules code to run at the end of the function, no matter how the function exits —
+        // whether it returns early, finishes normally, or even throws an error.
+        defer { isRefreshing = false }
+        
+        await load()
+    }
 }
