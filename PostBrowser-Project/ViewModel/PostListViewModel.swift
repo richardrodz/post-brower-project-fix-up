@@ -8,53 +8,50 @@
 import Foundation
 import Combine
 
-// ViewModel does networking directly via concrete service.
-// No clear error state, no loading state, not thread-safe from UI perspective.
-
+@MainActor
 final class PostListViewModel: ObservableObject {
-
-    @Published var posts: [Post] = []
+    enum LoadingState {
+        case loading
+        case loaded
+        case error(String)
+    }
+    
     @Published var searchText: String = ""
-    @Published var filteredPosts: [Post] = [] // duplicated derived state
-    @Published var errorMessage: String? = nil
+    @Published private(set) var posts: [Post] = []
+    @Published private(set) var loadingState: LoadingState = .loading
 
-    private let service = PostService() // hard-coded dependency
-
-    private var cancellables = Set<AnyCancellable>()
-
-    init() {
-        // Filter logic is a bit clumsy and not debounced.
-        $searchText
-            .sink { [weak self] query in
-                guard let self else { return }
-
-                if query.isEmpty {
-                    self.filteredPosts = self.posts
-                } else {
-                    self.filteredPosts = self.posts.filter {
-                        $0.title.lowercased().contains(query.lowercased()) ||
-                        $0.body.lowercased().contains(query.lowercased())
-                    }
-                }
-            }
-            .store(in: &cancellables)
+    private let service: PostFetching
+    private var isRefreshing: Bool = false
+    
+    var filteredPosts: [Post] {
+        guard !searchText.isEmpty else { return posts }
+        
+        let query = searchText.lowercased()
+        return posts.filter {
+            $0.title.lowercased().contains(query) ||
+            $0.body.lowercased().contains(query)
+        }
     }
 
-    func load() {
-        // No loading state here.
-        service.fetchPosts { [weak self] posts, error in
-            guard let self else { return }
+    init(service: PostFetching) {
+        self.service = service
+        
+        // Load services when ViewModel is initialize
+        Task { await self.load() }
+    }
+    
+    convenience init() {
+        self.init(service: PostService())
+    }
 
-            if let error = error {
-                self.errorMessage = error.localizedDescription
-                return
-            }
-
-            if let posts = posts {
-                // ❗️This might be called on a background thread
-                self.posts = posts
-                self.filteredPosts = posts
-            }
+    func load() async {
+        loadingState = .loading
+        
+        do {
+            posts = try await service.fetchPosts()
+            loadingState = .loaded
+        } catch {
+            loadingState = .error(error.localizedDescription)
         }
     }
 }

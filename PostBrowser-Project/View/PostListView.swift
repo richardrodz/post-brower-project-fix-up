@@ -8,60 +8,49 @@
 import SwiftUI
 
 struct PostListView: View {
-
     @StateObject private var viewModel = PostListViewModel()
 
     var body: some View {
         NavigationStack {
-            VStack {
-                TextField("Search posts", text: $viewModel.searchText)
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(8)
-                    .padding()
-
-                if let error = viewModel.errorMessage {
-                    Text("Error: \(error)")
-                        .foregroundColor(.red)
-                }
-
-                List(viewModel.filteredPosts) { post in
-                    NavigationLink {
-                        PostDetailView(post: post)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(post.title)
-                                .font(.headline)
-                            Text(post.body)
-                                .font(.subheadline)
-                                .lineLimit(2)
-                                .foregroundColor(.secondary)
+            ZStack {
+                switch viewModel.loadingState {
+                case .loading:
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    
+                    ProgressView("Loading...")
+                        .padding(16)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(16)
+                case .loaded:
+                    VStack {
+                        TextField("Search posts", text: $viewModel.searchText)
+                            .padding()
+                            .background(Color(.secondarySystemBackground))
+                            .cornerRadius(8)
+                            .padding()
+                        
+                        List(viewModel.filteredPosts) { post in
+                            NavigationLink {
+                                PostDetailView(post: post)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(post.title)
+                                        .font(.headline)
+                                    Text(post.body)
+                                        .font(.subheadline)
+                                        .lineLimit(2)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
                         }
                     }
+                case .error(let errorMessage):
+                    Text("Error: \(errorMessage)")
+                        .foregroundColor(.red)
                 }
             }
             .navigationTitle("Posts")
-            .onAppear {
-                viewModel.load() // Called every time it appears
-            }
         }
-    }
-}
-
-struct PostDetailView: View {
-    let post: Post
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                Text(post.title)
-                    .font(.title2)
-                    .bold()
-                Text(post.body)
-                    .font(.body)
-            }
-            .padding()
-        }
-        .navigationTitle("Detail")
     }
 }
