@@ -10,7 +10,9 @@ import Combine
 
 @MainActor
 final class PostListViewModel: ObservableObject {
+    // Adding idle give me a way to not constantly load whenever the view is dispalyed.
     enum LoadingState {
+        case idle
         case loading
         case loaded
         case error(String)
@@ -18,7 +20,7 @@ final class PostListViewModel: ObservableObject {
     
     @Published var searchText: String = ""
     @Published private(set) var posts: [Post] = []
-    @Published private(set) var loadingState: LoadingState = .loading
+    @Published private(set) var loadingState: LoadingState = .idle
 
     private let service: PostFetching
     private var isRefreshing: Bool = false
@@ -35,23 +37,42 @@ final class PostListViewModel: ObservableObject {
 
     init(service: PostFetching) {
         self.service = service
-        
-        // Load services when ViewModel is initialize
-        Task { await self.load() }
     }
     
     convenience init() {
         self.init(service: PostService())
     }
-
+    
+    func loadIfNeeded() async {
+        guard case .idle = loadingState else {
+            return
+        }
+        await load()
+    }
+    
     func load() async {
         loadingState = .loading
         
         do {
             posts = try await service.fetchPosts()
             loadingState = .loaded
+        }
+        // Using PostError as setup in PostService
+        // to give better description of error
+        catch let error as PostError {
+            switch error {
+            case .invalidURL:
+                loadingState = .error("Internal error: Bad URL")
+            case .network:
+                loadingState = .error("Network error, please try again")
+            case .badStatusCode(let code):
+                loadingState = .error("server error: \(code)")
+            case .decoding:
+                loadingState = .error("Something went wrong with parsing data")
+                
+            }
         } catch {
-            loadingState = .error(error.localizedDescription)
+            loadingState = .error("Unexpected error: \(error.localizedDescription)")
         }
     }
 }

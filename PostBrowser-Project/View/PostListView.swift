@@ -14,14 +14,12 @@ struct PostListView: View {
         NavigationStack {
             ZStack {
                 switch viewModel.loadingState {
-                case .loading:
+                case .loading, .idle:
                     Color.black.opacity(0.3)
                         .ignoresSafeArea()
                     
                     ProgressView("Loading...")
                         .padding(16)
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(16)
                 case .loaded:
                     VStack {
                         TextField("Search posts", text: $viewModel.searchText)
@@ -48,9 +46,17 @@ struct PostListView: View {
                 case .error(let errorMessage):
                     Text("Error: \(errorMessage)")
                         .foregroundColor(.red)
+                    
+                    Button("Retry") {
+                        Task { await viewModel.load() }
+                    }
                 }
             }
             .navigationTitle("Posts")
         }
+        .task {
+            await viewModel.loadIfNeeded()
+        }
+        
     }
 }
