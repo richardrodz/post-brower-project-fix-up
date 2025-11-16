@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PostDetailView: View {
-    var post: Post
+    let post: Post
 
     var body: some View {
         ScrollView {
