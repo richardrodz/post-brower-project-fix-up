@@ -47,8 +47,8 @@ struct PostListView: View {
         switch viewModel.loadingState {
         case .idle:
             // .inital state
-            Text("")
-            
+            Color.clear // or a simple placeholder text
+
             // Show list even if we are in .loading (e.g. refresh)
         case .loading, .loaded:
             VStack {
@@ -57,6 +57,28 @@ struct PostListView: View {
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(8)
                     .padding()
+                
+                HStack {
+                    Picker("Sort", selection: $viewModel.sortType) {
+                        Text("Title ↑")
+                            .tag(PostListViewModel.SortType.titleAsc)
+                        Text("Title ↓")
+                            .tag(PostListViewModel.SortType.titleDesc)
+                        Text("ID ↑")
+                            .tag(PostListViewModel.SortType.idAsc)
+                        Text("ID ↓")
+                            .tag(PostListViewModel.SortType.idDesc)
+                    }
+                    .pickerStyle(.segmented)
+
+                    Toggle(isOn: $viewModel.showFavoritesOnly) {
+                        Image(systemName: "star.fill")
+                    }
+                    //.labelsHidden()
+                    .frame(width: 60) // keeps it from stretching too wide
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 8)
                 
                 List(viewModel.filteredPosts) { post in
                     postRow(with: post)
@@ -80,7 +102,7 @@ struct PostListView: View {
     func postRow(with post: Post) -> some View {
         HStack(alignment: .center) {
             Button {
-                viewModel.addToFavorites(id: post.id)
+                viewModel.toggleFavorites(id: post.id)
             } label: {
                 if viewModel.favoritePosts.contains(post.id) {
                     Image(systemName: "star.fill")

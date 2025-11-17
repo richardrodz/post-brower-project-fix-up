@@ -18,23 +18,66 @@ final class PostListViewModel: ObservableObject {
         case error(String)
     }
     
+    enum SortType {
+        case titleAsc
+        case titleDesc
+        case idAsc
+        case idDesc
+    }
+    
     @Published var searchText: String = ""
     @Published private(set) var posts: [Post] = []
     @Published private(set) var loadingState: LoadingState = .idle
     @Published private(set) var favoritePosts = Set<Int>()
+    @Published var sortType: SortType = .titleAsc
+    @Published var showFavoritesOnly: Bool = false
 
     private let service: PostFetching
     private var isRefreshing: Bool = false
     
     var filteredPosts: [Post] {
         // posts is all the posts from the request in services.
-        guard !searchText.isEmpty else { return posts }
+//        guard !searchText.isEmpty else { return posts }
+//        
+//        let query = searchText.lowercased()
+//        return posts.filter {
+//            $0.title.lowercased().contains(query) ||
+//            $0.body.lowercased().contains(query)
+//        }
         
-        let query = searchText.lowercased()
-        return posts.filter {
-            $0.title.lowercased().contains(query) ||
-            $0.body.lowercased().contains(query)
+        var result = posts
+        
+        // 1. Favorite filter
+        if showFavoritesOnly {
+            result = result.filter { favoritePosts.contains($0.id) }
         }
+        
+        // 2. Search filter
+        if !searchText.isEmpty {
+            let query = searchText.lowercased()
+            result = result.filter {
+                $0.title.lowercased().contains(query) ||
+                $0.body.lowercased().contains(query)
+            }
+        }
+        
+        // 3. Sorting
+         switch sortType {
+         case .titleAsc:
+             result.sort {
+                 $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+             }
+         case .titleDesc:
+             result.sort {
+                 $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedDescending
+             }
+         case .idAsc:
+             result.sort { $0.id < $1.id }
+         case .idDesc:
+             result.sort { $0.id > $1.id }
+         }
+
+         return result
     }
 
     init(service: PostFetching) {
@@ -90,7 +133,11 @@ final class PostListViewModel: ObservableObject {
         await load()
     }
     
-    func addToFavorites(id: Int) {
-        favoritePosts.insert(id)
+    func toggleFavorites(id: Int) {
+        if favoritePosts.contains(id) {
+            favoritePosts.remove(id)
+        } else {
+            favoritePosts.insert(id)
+        }
     }
 }
