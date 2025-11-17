@@ -6,11 +6,27 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		5E51532D2ECA95FD001911CA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E706C4C2EC587BF0077B181 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5E706C532EC587BF0077B181;
+			remoteInfo = "PostBrowser-Project";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		5E5153292ECA95FD001911CA /* PostBrowser-ProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PostBrowser-ProjectTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E706C542EC587BF0077B181 /* PostBrowser-Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PostBrowser-Project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		5E51532A2ECA95FD001911CA /* PostBrowser-ProjectTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "PostBrowser-ProjectTests";
+			sourceTree = "<group>";
+		};
 		5E706C562EC587BF0077B181 /* PostBrowser-Project */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "PostBrowser-Project";
@@ -19,6 +35,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5E5153262ECA95FD001911CA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5E706C512EC587BF0077B181 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -33,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				5E706C562EC587BF0077B181 /* PostBrowser-Project */,
+				5E51532A2ECA95FD001911CA /* PostBrowser-ProjectTests */,
 				5E706C552EC587BF0077B181 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				5E706C542EC587BF0077B181 /* PostBrowser-Project.app */,
+				5E5153292ECA95FD001911CA /* PostBrowser-ProjectTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,6 +73,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5E5153282ECA95FD001911CA /* PostBrowser-ProjectTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5E51532F2ECA95FD001911CA /* Build configuration list for PBXNativeTarget "PostBrowser-ProjectTests" */;
+			buildPhases = (
+				5E5153252ECA95FD001911CA /* Sources */,
+				5E5153262ECA95FD001911CA /* Frameworks */,
+				5E5153272ECA95FD001911CA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5E51532E2ECA95FD001911CA /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5E51532A2ECA95FD001911CA /* PostBrowser-ProjectTests */,
+			);
+			name = "PostBrowser-ProjectTests";
+			packageProductDependencies = (
+			);
+			productName = "PostBrowser-ProjectTests";
+			productReference = 5E5153292ECA95FD001911CA /* PostBrowser-ProjectTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		5E706C532EC587BF0077B181 /* PostBrowser-Project */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5E706C5F2EC587C00077B181 /* Build configuration list for PBXNativeTarget "PostBrowser-Project" */;
@@ -77,9 +125,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2600;
+				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					5E5153282ECA95FD001911CA = {
+						CreatedOnToolsVersion = 26.1.1;
+						TestTargetID = 5E706C532EC587BF0077B181;
+					};
 					5E706C532EC587BF0077B181 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
@@ -100,11 +152,19 @@
 			projectRoot = "";
 			targets = (
 				5E706C532EC587BF0077B181 /* PostBrowser-Project */,
+				5E5153282ECA95FD001911CA /* PostBrowser-ProjectTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		5E5153272ECA95FD001911CA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5E706C522EC587BF0077B181 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,6 +175,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5E5153252ECA95FD001911CA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5E706C502EC587BF0077B181 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,7 +191,59 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		5E51532E2ECA95FD001911CA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5E706C532EC587BF0077B181 /* PostBrowser-Project */;
+			targetProxy = 5E51532D2ECA95FD001911CA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		5E5153302ECA95FD001911CA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y9K759NQ2U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.posture.PostBrowser-ProjectTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PostBrowser-Project.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PostBrowser-Project";
+			};
+			name = Debug;
+		};
+		5E5153312ECA95FD001911CA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y9K759NQ2U;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.posture.PostBrowser-ProjectTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PostBrowser-Project.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PostBrowser-Project";
+			};
+			name = Release;
+		};
 		5E706C5D2EC587C00077B181 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -313,6 +432,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5E51532F2ECA95FD001911CA /* Build configuration list for PBXNativeTarget "PostBrowser-ProjectTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E5153302ECA95FD001911CA /* Debug */,
+				5E5153312ECA95FD001911CA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5E706C4F2EC587BF0077B181 /* Build configuration list for PBXProject "PostBrowser-Project" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
