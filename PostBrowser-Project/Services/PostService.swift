@@ -7,22 +7,44 @@
 
 import Foundation
 
-// NOTE: This is not protocol-driven, not very testable, etc.
-// It also force-unwraps like crazy 🙃
+// Polish Create domain-specific error type
+enum PostError: Error {
+    case invalidURL
+    case network(Error)
+    case badStatusCode(Int)
+    case decoding(Error)
+}
 
-final class PostService {
-    func fetchPosts(completion: @escaping ([Post]?, Error?) -> Void) {
-        let url = URL(string: "https://jsonplaceholder.typicode.com/posts")! // force unwrap
+protocol PostFetching {
+    func fetchPosts() async throws -> [Post]
+}
 
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if error != nil {
-                completion(nil, error)
-                return
+final class PostService: PostFetching {
+    func fetchPosts() async throws -> [Post] {
+        guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else {
+            throw PostError.invalidURL
+        }
+        
+        do {
+            // the outer do is for this failing and then catching.
+            let (data, response) = try await URLSession.shared.data(from: url)
+            
+            // Probably too much to think about during an interview.
+            // The the other errors are useful though.
+            guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+                throw PostError.badStatusCode((response as? HTTPURLResponse)?.statusCode ?? -1)
             }
-
-            // no statusCode check, no guard
-            let posts = try! JSONDecoder().decode([Post].self, from: data!) // force unwrap + try!
-            completion(posts, nil)  // not guaranteed to be on main
-        }.resume()
+            
+            // This is good on it's own, but if I want to hanlde domain-error might be useful to go at the source
+            //return try JSONDecoder().decode([Post].self, from: data)
+            
+            do {
+                return try JSONDecoder().decode([Post].self, from: data)
+            } catch {
+                throw PostError.decoding(error)
+            }
+        } catch {
+            throw PostError.network(error)
+        }
     }
 }

@@ -8,60 +8,144 @@
 import SwiftUI
 
 struct PostListView: View {
-
     @StateObject private var viewModel = PostListViewModel()
-
+    @State private var selectedPost: Post? // drives navigation
+    
     var body: some View {
         NavigationStack {
+            ZStack {
+                // Main Views
+                contentView
+                
+                // overlay if loading
+                if shouldShowLoadingOverlay {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    
+                    ProgressView("Loading...")
+                        .padding(16)
+                }
+                
+            }
+            .refreshable {
+                await viewModel.refresh()
+            }
+            .navigationDestination(item: $selectedPost) { post in
+                PostDetailView(post: post)
+            }
+            .navigationTitle("Posts")
+        }
+        .task {
+            await viewModel.loadIfNeeded()
+        }
+    }
+    
+    // MARK: Views
+    
+    @ViewBuilder
+    private var contentView: some View {
+        switch viewModel.loadingState {
+        case .idle:
+            // .inital state
+            Color.clear // or a simple placeholder text
+
+            // Show list even if we are in .loading (e.g. refresh)
+        case .loading, .loaded:
             VStack {
                 TextField("Search posts", text: $viewModel.searchText)
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(8)
                     .padding()
-
-                if let error = viewModel.errorMessage {
-                    Text("Error: \(error)")
-                        .foregroundColor(.red)
-                }
-
-                List(viewModel.filteredPosts) { post in
-                    NavigationLink {
-                        PostDetailView(post: post)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(post.title)
-                                .font(.headline)
-                            Text(post.body)
-                                .font(.subheadline)
-                                .lineLimit(2)
-                                .foregroundColor(.secondary)
+                
+                VStack(alignment: .leading) {
+                    HStack {
+                        Picker("Sort", selection: $viewModel.sortType) {
+                            Text("Title ↑")
+                                .tag(PostListViewModel.SortType.titleAsc)
+                            Text("Title ↓")
+                                .tag(PostListViewModel.SortType.titleDesc)
+                            Text("ID ↑")
+                                .tag(PostListViewModel.SortType.idAsc)
+                            Text("ID ↓")
+                                .tag(PostListViewModel.SortType.idDesc)
+                        }
+                        .pickerStyle(.segmented)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                    
+                    // TODO: Fix Toggle Spaces Issue!
+                    HStack {
+                        Text("Enable Favorites Only")
+                        
+                        Toggle(isOn: $viewModel.showFavoritesOnly) {
+                            Image(systemName: "star.fill")
+                                .padding(.horizontal)
                         }
                     }
+                    .padding(.horizontal)
+                }
+
+                
+                List(viewModel.filteredPosts) { post in
+                    postRow(with: post)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedPost = post
+                        }
                 }
             }
-            .navigationTitle("Posts")
-            .onAppear {
-                viewModel.load() // Called every time it appears
+        case .error(let errorMessage):
+            Text("Error: \(errorMessage)")
+                .foregroundColor(.red)
+            
+            Button("Retry") {
+                Task { await viewModel.load() }
             }
         }
     }
-}
-
-struct PostDetailView: View {
-    let post: Post
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                Text(post.title)
-                    .font(.title2)
-                    .bold()
-                Text(post.body)
-                    .font(.body)
+    
+    @ViewBuilder
+    func postRow(with post: Post) -> some View {
+        HStack(alignment: .center) {
+            Button {
+                viewModel.toggleFavorites(id: post.id)
+            } label: {
+                if viewModel.favoritePosts.contains(post.id) {
+                    Image(systemName: "star.fill")
+                } else {
+                    Image(systemName: "star")
+                }
             }
-            .padding()
+            .buttonStyle(.borderless)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(post.title)
+                    .font(.headline)
+                Text(post.body)
+                    .font(.subheadline)
+                    .lineLimit(2)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .foregroundColor(.secondary)
+                .imageScale(.small)
+                .accessibilityHidden(true) // decorative
         }
-        .navigationTitle("Detail")
+    }
+    
+    // MARK: Utility
+    
+    private var shouldShowLoadingOverlay: Bool {
+        switch viewModel.loadingState {
+        case .loading:
+            return true
+        default:
+            return false
+        }
     }
 }
