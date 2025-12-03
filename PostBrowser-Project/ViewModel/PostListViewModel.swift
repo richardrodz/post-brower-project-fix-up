@@ -36,15 +36,6 @@ final class PostListViewModel: ObservableObject {
     private var isRefreshing: Bool = false
     
     var filteredPosts: [Post] {
-        // posts is all the posts from the request in services.
-//        guard !searchText.isEmpty else { return posts }
-//        
-//        let query = searchText.lowercased()
-//        return posts.filter {
-//            $0.title.lowercased().contains(query) ||
-//            $0.body.lowercased().contains(query)
-//        }
-        
         var result = posts
         
         // 1. Favorite filter
@@ -66,10 +57,12 @@ final class PostListViewModel: ObservableObject {
          case .titleAsc:
              result.sort {
                  $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+                 //$0.title.lowercased() > $1.title.lowercased()
              }
          case .titleDesc:
              result.sort {
                  $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedDescending
+                 //$0.title.lowercased() > $1.title.lowercased()
              }
          case .idAsc:
              result.sort { $0.id < $1.id }

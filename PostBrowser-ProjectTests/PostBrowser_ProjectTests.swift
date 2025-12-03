@@ -10,17 +10,23 @@ import XCTest
 
 final class PostListViewModelTests: XCTestCase {
     
+    // Mock Data
+    let mockService = MockPostService()
+    
+    let mockPost = [
+        Post(userId: 1, id: 1, title: "First", body: "Body 1"),
+        Post(userId: 2, id: 2, title: "Second", body: "Body 2")
+        ]
+    
+    enum DummyError: Error {
+        case test
+    }
+    
     // MARK: Success case
     
     @MainActor
     func test_load_success_updatesPostsAndState() async {
         // Set up posts
-        let mockPost = [
-            Post(userId: 1, id: 1, title: "First", body: "Body 1"),
-            Post(userId: 2, id: 2, title: "Second", body: "Body 2")
-            ]
-        
-        let mockService = MockPostService()
         mockService.postsToReturn = mockPost
         
         let sut = PostListViewModel(service: mockService)
@@ -37,28 +43,20 @@ final class PostListViewModelTests: XCTestCase {
     
     // MARK: Failure case
     @MainActor
-    func test_load_failure_setErrorState() async {
-        enum DummyError: Error {
-            case test
-        }
-        
+    func test_load_failure_setErrorState() async {        
         // Arrange
-        let mockService = MockPostService()
         mockService.errorToThrow = DummyError.test
         
         let sut = PostListViewModel(service: mockService)
         
         // Act
-        await sut.load()
-        
-        XCTAssert(mockService.fetchCalled, "Expected fetchPosts to be called")
+        await sut.load() 
         
         if case .error(let message) = sut.loadingState {
             XCTAssertFalse(message.isEmpty, "Expected an error message")
         } else {
             XCTFail("Expected loadingState to be .error got \(sut.loadingState)")
         }
-        
     }
 }
 

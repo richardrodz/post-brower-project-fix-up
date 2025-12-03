@@ -58,27 +58,35 @@ struct PostListView: View {
                     .cornerRadius(8)
                     .padding()
                 
-                HStack {
-                    Picker("Sort", selection: $viewModel.sortType) {
-                        Text("Title ↑")
-                            .tag(PostListViewModel.SortType.titleAsc)
-                        Text("Title ↓")
-                            .tag(PostListViewModel.SortType.titleDesc)
-                        Text("ID ↑")
-                            .tag(PostListViewModel.SortType.idAsc)
-                        Text("ID ↓")
-                            .tag(PostListViewModel.SortType.idDesc)
+                VStack(alignment: .leading) {
+                    HStack {
+                        Picker("Sort", selection: $viewModel.sortType) {
+                            Text("Title ↑")
+                                .tag(PostListViewModel.SortType.titleAsc)
+                            Text("Title ↓")
+                                .tag(PostListViewModel.SortType.titleDesc)
+                            Text("ID ↑")
+                                .tag(PostListViewModel.SortType.idAsc)
+                            Text("ID ↓")
+                                .tag(PostListViewModel.SortType.idDesc)
+                        }
+                        .pickerStyle(.segmented)
                     }
-                    .pickerStyle(.segmented)
-
-                    Toggle(isOn: $viewModel.showFavoritesOnly) {
-                        Image(systemName: "star.fill")
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                    
+                    // TODO: Fix Toggle Spaces Issue!
+                    HStack {
+                        Text("Enable Favorites Only")
+                        
+                        Toggle(isOn: $viewModel.showFavoritesOnly) {
+                            Image(systemName: "star.fill")
+                                .padding(.horizontal)
+                        }
                     }
-                    //.labelsHidden()
-                    .frame(width: 60) // keeps it from stretching too wide
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 8)
+
                 
                 List(viewModel.filteredPosts) { post in
                     postRow(with: post)

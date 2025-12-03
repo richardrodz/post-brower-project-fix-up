@@ -7,7 +7,6 @@
 
 import Foundation
 
-// 👇 Simple model (this matches jsonplaceholder's /posts endpoint)
 struct Post: Identifiable, Codable, Hashable {
     let userId: Int
     let id: Int
